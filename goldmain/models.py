@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+
 
 class GoldPrice(models.Model):
     day = models.DateField(auto_now_add=True)

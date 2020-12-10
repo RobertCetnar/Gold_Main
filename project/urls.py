@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from goldmain.views import gold_price_from_website
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('gold_price/', gold_price_from_website),
 ]
