@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 
 
 def gold_price_from_website():
-    URL = 'https://www.mennica.com.pl/produkty-inwestycyjne/analiza-rynku-zlota'
-    page = requests.get(URL)
+    url = 'https://www.mennica.com.pl/produkty-inwestycyjne/analiza-rynku-zlota'
+    page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     page_html = soup.find_all('div', class_='col-md-3')
     for currency in page_html:

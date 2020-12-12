@@ -3,7 +3,7 @@
 <form action="gold_price_from_website" method="post" >
     {% csrf_token %}
     {{ form.as_p }}
-    <h1>Aktualny kurs zlota:</h1>
+    <h1>Current gold price:</h1>
         <p>{{gold_price}} USD/uncja</p>
 </form>
 {% endblock %}
