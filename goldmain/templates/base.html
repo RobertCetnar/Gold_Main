@@ -4,7 +4,21 @@
     <head><meta charset="utf-8"></head>
     <body>
         <img src="{% static 'gold-mine-logo-200x200-2474.png' %}"/><br/>
-        <li><a href="gold_price">Gold Price</a> </li>
+        <a href="{% url 'home' %}">Home</a> /
+        <a href="{% url 'gold_price' %}">Gold Price</a> /
+        {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a> <br>
+        {% else %}
+        <a href="{% url 'register' %}">Register</a> /
+        <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+
+        <strong>
+            {% for message in messages %}
+                <p id="messages">{{message}}</p>
+            {% endfor %}
+            </strong>
+
         {% block content %}
 
         {% endblock %}

@@ -22,4 +22,3 @@ gold_price_from_website()
 
 
 
-
