@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 import requests
 from bs4 import BeautifulSoup
-from .models import GoldPrice
+from .models import GoldPrice, Notes
 from django.contrib import messages
 from .forms import UserRegisterForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
@@ -70,4 +70,58 @@ def logout_user(request):
     logout(request)
     messages.success(request, f'You have been logged out')
     return redirect('home')
+
+
+# Note book for logged user
+def note_book(request):
+    noteid = int(request.GET.get('noteid', 0))
+    notes = Notes.objects.all()
+
+    if request.method == 'POST':
+        noteid = int(request.POST.get('noteid', 0))
+        title = request.POST.get('title')
+        content = request.POST.get('content', '')
+
+        note = Notes.objects.create(title=title, content=content)
+
+        return redirect('note_book')
+
+    if noteid > 0:
+        note = Notes.objects.get(pk=noteid)
+    else:
+        note = ''
+
+    context = {
+        'noteid': noteid,
+        'notes': notes,
+        'note': note
+    }
+    return render(request, 'note_book.html', context)
+
+
+def delete_note(request, noteid):
+    note = Notes.objects.get(pk=noteid)
+    note.delete()
+
+    return redirect('note_book')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

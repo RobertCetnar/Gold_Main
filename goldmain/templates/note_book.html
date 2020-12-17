@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+<body>
+        <nav class="navbar is-dark">
+            <div class="navbar-brand">
+                <a href="{% url 'note_book' %}" class="navbar-item">Note book</a>
+            </div>
+
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <a href="{% url 'note_book' %}?noteid=0" class="navbar-item">New Note</a>
+                </div>
+            </div>
+        </nav>
+
+        <section class="section">
+            <div class="columns">
+                <div class="column is-2">
+                    <aside class="menu">
+                        <p class="menu-label">Notes</p>
+
+                        <ul class="menu-list">
+
+                            {% for note in notes %}
+                                <li>
+                                    <a href="{% url 'note_book' %}?noteid={{ note.id }}">{{ note.title }} - {{ note.created }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </aside>
+                </div>
+
+                <div class="column is-10">
+                    <form method="post" action="{% url 'note_book' %}">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="noteid" value="{{ noteid }}">
+
+                        <!--<div class="field">
+                            <label class="label">Author</label>
+
+                            <div class="control">
+                                <input type="text" class="input" name="author" placeholder="Author"{% if note %} value="{{ note.note_author }}"{% endif %}>
+                            </div>
+                        </div>-->
+
+                        <div class="field">
+                            <label class="label">Title</label>
+
+
+                                <!--{% if document %}
+                                    <span class="has-text-grey-light">
+                                        Created at: {{ document.created_at|date:"m/d Y" }} /
+                                        Modified at: {{ document.modified_at|date:"m/d Y" }}
+                                    </span>
+                                {% endif %}-->
+
+
+                            <div class="control">
+                                <input type="text" class="input" name="title" placeholder="Title"{% if note %} value="{{ note.title }}"{% endif %}>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Content</label>
+
+                            <div class="control">
+                                <textarea class="textarea" name="content" placeholder="Content">{% if note %}{{ note.content }}{% endif %}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button class="button is-primary">Save</button>
+                            </div>
+                            {% if note %}
+                                <div class="control">
+                                    <a href="{% url 'delete_note' note.id %}" class="button is-danger">Delete</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </body>
+{% else %}
+<strong>You have to Log in !</strong>
+{% endif %}
+{% endblock %}

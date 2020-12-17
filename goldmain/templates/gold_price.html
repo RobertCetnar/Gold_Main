@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <form action="gold_price_from_website" method="post" >
     {% csrf_token %}
     {{ form.as_p }}
-    <h1>Current gold price:</h1>
+
+    <strong><p>CURRENT GOLD PRICE:</p></strong>
         <p>{{gold_price}} USD/uncja ( uncja≈31.1 gram) </p>
+
 </form>
 {% endblock %}

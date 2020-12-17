@@ -7,10 +7,14 @@ class GoldPrice(models.Model):
     price = models.FloatField()
 
 
-class User_Notes(models.Model):
-    day = models.DateField(auto_now_add=True)
-    note = models.CharField(max_length=256)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+class Notes(models.Model):
+    title = models.CharField(max_length=256)
+    content = models.CharField(max_length=256)
+    #note_author = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
 
 
 class Forecast(models.Model):
