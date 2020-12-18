@@ -13,11 +13,11 @@
                     <a href="{% url 'home' %}" class="navbar-item">Home</a>
                     <a href="{% url 'gold_price' %}" class="navbar-item">Gold Price</a>
                 </div>
-
                 <div class="navbar-menu">
                     <div class="navbar-end">
                         {% if user.is_authenticated %}
                         <a href="{% url 'note_book' %}" class="navbar-item">Note Book</a>
+                        <a href="{% url 'forecast' %}" class="navbar-item">Forecast</a>
                         <a href="{% url 'logout' %}" class="navbar-item">Logout</a>
                         {% else %}
                         <a href="{% url 'register' %}" class="navbar-item">Register</a>
@@ -26,7 +26,6 @@
                     </div>
                 </div>
          </nav>
-
          <div>
              <p class="aligncenter">
                  <img src="{% static 'gold-mine-logo-200x200-2474.png' %}" alt="centered image" />

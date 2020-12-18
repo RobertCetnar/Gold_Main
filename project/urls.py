@@ -1,7 +1,8 @@
 
 from django.contrib import admin
 from django.urls import path
-from goldmain.views import home, gold_price_from_website, register, login_user, logout_user, note_book, delete_note
+from goldmain.views import home, gold_price_from_website, register, login_user, logout_user, note_book, delete_note, forecast
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,5 +13,5 @@ urlpatterns = [
     path('logout/', logout_user, name='logout'),
     path('note_book/', note_book, name='note_book'),
     path('delete_note/<int:noteid>/', delete_note, name='delete_note'),
-
+    path('forecast/', forecast, name='forecast'),
 ]

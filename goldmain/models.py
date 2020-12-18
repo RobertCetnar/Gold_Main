@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class GoldPrice(models.Model):
     day = models.DateField(auto_now_add=True)
     price = models.FloatField()
@@ -10,7 +9,7 @@ class GoldPrice(models.Model):
 class Notes(models.Model):
     title = models.CharField(max_length=256)
     content = models.CharField(max_length=256)
-    #note_author = models.ForeignKey(User, on_delete=models.CASCADE)
+    note_author = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -18,9 +17,10 @@ class Notes(models.Model):
 
 
 class Forecast(models.Model):
-    day = models.DateField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    gold_forecast = models.CharField(max_length=256)
+    author = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    created = models.DateField(auto_now_add=True)
+    gold_forecast = models.FloatField()
+    verification_date = models.DateField("Purchase Date(yyyy-mm-dd)", auto_now_add=False, auto_now=False, blank=True)
 
 
 class History_Forecast(models.Model):

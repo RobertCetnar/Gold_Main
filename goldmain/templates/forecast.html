@@ -2,16 +2,21 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+{% if user.is_authenticated %}
 <div class="content-section">
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
-            <strong><p class="border-bottom mb-4">LOG IN:</p></strong>
+            <strong><p class="border-bottom mb-4">FORECAST:</p></strong>
             {{ form|crispy }}
         </fieldset>
         <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Login</button>
+            <button class="btn btn-outline-info" type="submit">SAVE</button>
         </div>
+
     </form>
 </div>
+{% else %}
+<strong>You have to Log in !</strong>
+{% endif %}
 {% endblock %}

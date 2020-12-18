@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from .models import GoldPrice, Notes
 from django.contrib import messages
-from .forms import UserRegisterForm, LoginForm
+from .forms import UserRegisterForm, LoginForm, ForecastForm
 from django.contrib.auth import authenticate, login, logout
 import datetime
 
@@ -49,8 +49,8 @@ def register(request):
 
 # Login
 def login_user(request):
-    form = LoginForm(request.POST)
     if request.method == 'POST':
+        form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -61,7 +61,8 @@ def login_user(request):
                 return redirect('home')
             else:
                 messages.info(request, 'Username or Password is incorrect')
-
+    else:
+        form = LoginForm()
     return render(request, 'login.html', {'form' : form})
 
 
@@ -81,9 +82,8 @@ def note_book(request):
         noteid = int(request.POST.get('noteid', 0))
         title = request.POST.get('title')
         content = request.POST.get('content', '')
-
-        note = Notes.objects.create(title=title, content=content)
-
+        note_author = request.user
+        note = Notes.objects.create(title=title, content=content, note_author=note_author)
         return redirect('note_book')
 
     if noteid > 0:
@@ -105,6 +105,23 @@ def delete_note(request, noteid):
 
     return redirect('note_book')
 
+
+# Create Forecast for logged user
+def forecast(request):
+    if request.method == 'POST':
+        form = ForecastForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.author = request.user
+            instance.save()
+            messages.success(request, f'Your Forecast have been saved !')
+            return redirect('forecast')
+    else:
+        form = ForecastForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'forecast.html', context)
 
 
 

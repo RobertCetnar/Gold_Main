@@ -23,7 +23,6 @@
                         <p class="menu-label">Notes</p>
 
                         <ul class="menu-list">
-
                             {% for note in notes %}
                                 <li>
                                     <a href="{% url 'note_book' %}?noteid={{ note.id }}">{{ note.title }} - {{ note.created }}</a>
@@ -32,32 +31,12 @@
                         </ul>
                     </aside>
                 </div>
-
                 <div class="column is-10">
                     <form method="post" action="{% url 'note_book' %}">
                         {% csrf_token %}
-
                         <input type="hidden" name="noteid" value="{{ noteid }}">
-
-                        <!--<div class="field">
-                            <label class="label">Author</label>
-
-                            <div class="control">
-                                <input type="text" class="input" name="author" placeholder="Author"{% if note %} value="{{ note.note_author }}"{% endif %}>
-                            </div>
-                        </div>-->
-
                         <div class="field">
                             <label class="label">Title</label>
-
-
-                                <!--{% if document %}
-                                    <span class="has-text-grey-light">
-                                        Created at: {{ document.created_at|date:"m/d Y" }} /
-                                        Modified at: {{ document.modified_at|date:"m/d Y" }}
-                                    </span>
-                                {% endif %}-->
-
 
                             <div class="control">
                                 <input type="text" class="input" name="title" placeholder="Title"{% if note %} value="{{ note.title }}"{% endif %}>
@@ -71,7 +50,6 @@
                                 <textarea class="textarea" name="content" placeholder="Content">{% if note %}{{ note.content }}{% endif %}</textarea>
                             </div>
                         </div>
-
                         <div class="field is-grouped">
                             <div class="control">
                                 <button class="button is-primary">Save</button>
