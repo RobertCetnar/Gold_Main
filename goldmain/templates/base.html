@@ -18,6 +18,7 @@
                         {% if user.is_authenticated %}
                         <a href="{% url 'note_book' %}" class="navbar-item">Note Book</a>
                         <a href="{% url 'forecast' %}" class="navbar-item">Forecast</a>
+                        <a href="{% url 'forecast_verification' %}" class="navbar-item">Forecast Verification</a>
                         <a href="{% url 'logout' %}" class="navbar-item">Logout</a>
                         {% else %}
                         <a href="{% url 'register' %}" class="navbar-item">Register</a>

@@ -2,11 +2,12 @@
 from django.shortcuts import render, redirect
 import requests
 from bs4 import BeautifulSoup
-from .models import GoldPrice, Notes
+from .models import GoldPrice, Notes, Forecast, ForecastVerification
 from django.contrib import messages
 from .forms import UserRegisterForm, LoginForm, ForecastForm
 from django.contrib.auth import authenticate, login, logout
 import datetime
+from django.contrib.auth.decorators import login_required
 
 
 # Main page
@@ -63,7 +64,7 @@ def login_user(request):
                 messages.info(request, 'Username or Password is incorrect')
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form' : form})
+    return render(request, 'login.html', {'form': form})
 
 
 # Logout
@@ -74,9 +75,10 @@ def logout_user(request):
 
 
 # Note book for logged user
+@login_required
 def note_book(request):
     noteid = int(request.GET.get('noteid', 0))
-    notes = Notes.objects.all()
+    notes = Notes.objects.filter(note_author=request.user)
 
     if request.method == 'POST':
         noteid = int(request.POST.get('noteid', 0))
@@ -99,6 +101,7 @@ def note_book(request):
     return render(request, 'note_book.html', context)
 
 
+# Delete Note
 def delete_note(request, noteid):
     note = Notes.objects.get(pk=noteid)
     note.delete()
@@ -107,6 +110,7 @@ def delete_note(request, noteid):
 
 
 # Create Forecast for logged user
+@login_required
 def forecast(request):
     if request.method == 'POST':
         form = ForecastForm(request.POST)
@@ -114,7 +118,7 @@ def forecast(request):
             instance = form.save(commit=False)
             instance.author = request.user
             instance.save()
-            messages.success(request, f'Your Forecast have been saved !')
+            messages.success(request, f'Your Forecast has been saved !')
             return redirect('forecast')
     else:
         form = ForecastForm()
@@ -124,10 +128,61 @@ def forecast(request):
     return render(request, 'forecast.html', context)
 
 
+# Verification of User Forecasts
+@login_required
+def forecast_verification(request):
+    lista_prognoz = []
+    forecast_to_verification = Forecast.objects.filter(author=request.user)
+    for f in forecast_to_verification:
+        create_date = f.created
+        gold_price = GoldPrice.objects.filter(day=create_date)
+        for g in gold_price:
+            create_gold_price = g.price
+        forecast = f.gold_forecast
+        ver_date = f.verification_date
+        gold_price_verificate = GoldPrice.objects.filter(day=ver_date)
+        if len(gold_price_verificate) > 0:
+            for v in gold_price_verificate:
+                verificate_gold_price = v.price
+        else:
+            verificate_gold_price = 0
+        if create_gold_price > 0 and forecast > 0 and verificate_gold_price > 0:
+            if forecast > create_gold_price and verificate_gold_price > create_gold_price:
+                result_of_verification = True
+                accuracy = int((verificate_gold_price - create_gold_price) / (forecast - create_gold_price) * 100)
+            elif forecast > create_gold_price > verificate_gold_price:
+                result_of_verification = False
+                accuracy = 0
+            elif forecast < create_gold_price < verificate_gold_price:
+                result_of_verification = False
+                accuracy = 0
+            elif forecast < create_gold_price and verificate_gold_price < create_gold_price and verificate_gold_price > 0:
+                result_of_verification = True
+                accuracy = int((verificate_gold_price - create_gold_price) / (forecast - create_gold_price) * 100)
 
-
-
-
+            verificated = ForecastVerification.objects.filter(forecast_to_verification_id=f.id)
+            if len(verificated) == 0:
+                verification = ForecastVerification.objects.create(verification_result=result_of_verification,
+                                                                   accuracy=accuracy,
+                                                                   forecast_to_verification_id=f.id)
+        else:
+            result_of_verification = f'No data'
+            accuracy = f'No data'
+        ocena_prognozy = {
+            'forecast_to_verification': forecast_to_verification,
+            'create_date': create_date,
+            'create_gold_price': create_gold_price,
+            'forecast': forecast,
+            'ver_date': ver_date,
+            'verificate_gold_price': verificate_gold_price,
+            'result_of_verification': result_of_verification,
+            'accuracy': accuracy
+        }
+        lista_prognoz.append(ocena_prognozy)
+    context = {
+        'lista_prognoz': lista_prognoz
+    }
+    return render(request, 'forecast_history.html', context)
 
 
 
