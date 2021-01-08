@@ -2,6 +2,7 @@
 
 <!doctype html>
 <html>
+<center>
     <head>
         <meta charset="utf-8">
         <title>Gold Main</title>
@@ -28,14 +29,7 @@
                 </div>
          </nav>
          <div>
-             <p class="aligncenter">
-                 <img src="{% static 'gold-mine-logo-200x200-2474.png' %}" alt="centered image" />
-             </p>
-             <style>
-                 .aligncenter {
-                     text-align: center;
-                 }
-             </style>
+             <img src="{% static 'gold-mine-logo-200x200-2474.png' %}" >
          </div>
         <strong>
             {% for message in messages %}
@@ -46,4 +40,5 @@
 
         {% endblock %}
     </body>
+</center>
 </html>

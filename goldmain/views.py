@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 # Main page
 def home(reguest):
-    return render(reguest, 'base.html')
+    return render(reguest, 'home.html')
 
 
 # Webscraping current gold price and save to database
@@ -70,7 +70,7 @@ def login_user(request):
 # Logout
 def logout_user(request):
     logout(request)
-    messages.success(request, f'You have been logged out')
+    messages.success(request, 'You have been logged out')
     return redirect('home')
 
 
@@ -85,7 +85,10 @@ def note_book(request):
         title = request.POST.get('title')
         content = request.POST.get('content', '')
         note_author = request.user
-        note = Notes.objects.create(title=title, content=content, note_author=note_author)
+        note = Notes.objects.create(
+            title=title,
+            content=content,
+            note_author=note_author)
         return redirect('note_book')
 
     if noteid > 0:
@@ -118,7 +121,7 @@ def forecast(request):
             instance = form.save(commit=False)
             instance.author = request.user
             instance.save()
-            messages.success(request, f'Your Forecast has been saved !')
+            messages.success(request, 'Your Forecast has been saved !')
             return redirect('forecast')
     else:
         form = ForecastForm()
@@ -132,13 +135,13 @@ def forecast(request):
 @login_required
 def forecast_verification(request):
     lista_prognoz = []
-    forecast_to_verification = Forecast.objects.filter(author=request.user)
+    forecast_to_verification = Forecast.objects.filter(author=request.user).order_by('-created')
     for f in forecast_to_verification:
         create_date = f.created
         gold_price = GoldPrice.objects.filter(day=create_date)
         for g in gold_price:
             create_gold_price = g.price
-        forecast = f.gold_forecast
+        forecast_price = f.gold_forecast
         ver_date = f.verification_date
         gold_price_verificate = GoldPrice.objects.filter(day=ver_date)
         if len(gold_price_verificate) > 0:
@@ -146,19 +149,19 @@ def forecast_verification(request):
                 verificate_gold_price = v.price
         else:
             verificate_gold_price = 0
-        if create_gold_price > 0 and forecast > 0 and verificate_gold_price > 0:
-            if forecast > create_gold_price and verificate_gold_price > create_gold_price:
+        if create_gold_price > 0 and forecast_price > 0 and verificate_gold_price > 0:
+            if forecast_price > create_gold_price and verificate_gold_price > create_gold_price:
                 result_of_verification = True
-                accuracy = int((verificate_gold_price - create_gold_price) / (forecast - create_gold_price) * 100)
-            elif forecast > create_gold_price > verificate_gold_price:
+                accuracy = int((verificate_gold_price - create_gold_price) / (forecast_price - create_gold_price) * 100)
+            elif forecast_price > create_gold_price and verificate_gold_price < create_gold_price:
                 result_of_verification = False
                 accuracy = 0
-            elif forecast < create_gold_price < verificate_gold_price:
+            elif forecast_price < create_gold_price and verificate_gold_price > create_gold_price:
                 result_of_verification = False
                 accuracy = 0
-            elif forecast < create_gold_price and verificate_gold_price < create_gold_price and verificate_gold_price > 0:
+            elif forecast_price < create_gold_price and verificate_gold_price < create_gold_price:
                 result_of_verification = True
-                accuracy = int((verificate_gold_price - create_gold_price) / (forecast - create_gold_price) * 100)
+                accuracy = int((verificate_gold_price - create_gold_price) / (forecast_price - create_gold_price) * 100)
 
             verificated = ForecastVerification.objects.filter(forecast_to_verification_id=f.id)
             if len(verificated) == 0:
@@ -166,13 +169,13 @@ def forecast_verification(request):
                                                                    accuracy=accuracy,
                                                                    forecast_to_verification_id=f.id)
         else:
-            result_of_verification = f'No data'
-            accuracy = f'No data'
+            result_of_verification = 'No data'
+            accuracy = 'No data'
         ocena_prognozy = {
             'forecast_to_verification': forecast_to_verification,
             'create_date': create_date,
             'create_gold_price': create_gold_price,
-            'forecast': forecast,
+            'forecast_price': forecast_price,
             'ver_date': ver_date,
             'verificate_gold_price': verificate_gold_price,
             'result_of_verification': result_of_verification,
@@ -183,17 +186,3 @@ def forecast_verification(request):
         'lista_prognoz': lista_prognoz
     }
     return render(request, 'forecast_history.html', context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
