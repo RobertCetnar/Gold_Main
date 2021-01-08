@@ -15,5 +15,4 @@ urlpatterns = [
     path('delete_note/<int:noteid>/', delete_note, name='delete_note'),
     path('forecast/', forecast, name='forecast'),
     path('forecast_verification/', forecast_verification, name='forecast_verification'),
-
 ]

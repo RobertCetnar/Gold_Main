@@ -108,7 +108,6 @@ def note_book(request):
 def delete_note(request, noteid):
     note = Notes.objects.get(pk=noteid)
     note.delete()
-
     return redirect('note_book')
 
 
@@ -150,18 +149,27 @@ def forecast_verification(request):
         else:
             verificate_gold_price = 0
         if create_gold_price > 0 and forecast_price > 0 and verificate_gold_price > 0:
-            if forecast_price > create_gold_price and verificate_gold_price > create_gold_price:
+            if create_gold_price > forecast_price and create_gold_price > verificate_gold_price:
                 result_of_verification = True
                 accuracy = int((verificate_gold_price - create_gold_price) / (forecast_price - create_gold_price) * 100)
-            elif forecast_price > create_gold_price and verificate_gold_price < create_gold_price:
-                result_of_verification = False
-                accuracy = 0
-            elif forecast_price < create_gold_price and verificate_gold_price > create_gold_price:
-                result_of_verification = False
-                accuracy = 0
-            elif forecast_price < create_gold_price and verificate_gold_price < create_gold_price:
+            elif create_gold_price < forecast_price and create_gold_price < verificate_gold_price:
                 result_of_verification = True
                 accuracy = int((verificate_gold_price - create_gold_price) / (forecast_price - create_gold_price) * 100)
+            elif create_gold_price == forecast_price and create_gold_price == verificate_gold_price:
+                result_of_verification = True
+                accuracy = 100
+            elif create_gold_price <= forecast_price and create_gold_price > verificate_gold_price:
+                result_of_verification = False
+                accuracy = 0
+            elif create_gold_price < forecast_price and create_gold_price >= verificate_gold_price:
+                result_of_verification = False
+                accuracy = 0
+            elif create_gold_price >= forecast_price and create_gold_price < verificate_gold_price:
+                result_of_verification = False
+                accuracy = 0
+            elif create_gold_price > forecast_price and create_gold_price <= verificate_gold_price:
+                result_of_verification = False
+                accuracy = 0
 
             verificated = ForecastVerification.objects.filter(forecast_to_verification_id=f.id)
             if len(verificated) == 0:

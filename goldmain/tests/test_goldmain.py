@@ -4,7 +4,7 @@ from django import urls
 from django.contrib.auth import get_user_model
 from goldmain.models import GoldPrice, Forecast
 import datetime
-from goldmain.views import forecast_verification
+
 
 @pytest.mark.parametrize('param', [
     ('home'),
@@ -69,26 +69,58 @@ def test_save_forecast(user_data, client, authenticated_user, forecast):
     assert response.url == urls.reverse('forecast')
 
 
-
-
 @pytest.mark.django_db
 def test_forecast_verification(user_data, client, authenticated_user):
     foracast = Forecast.objects.create(
         author=authenticated_user,
-        created='2021-01-07',
         gold_forecast=1900.00,
         verification_date='2021-01-08'
     )
+    foracast.created='2021-01-07'
+    foracast.save(update_fields=['created'])
+    foracast.refresh_from_db()
     goldprice = GoldPrice.objects.create(
-        day='2021-01-07',
         price=1850.00
     )
+    goldprice.day='2021-01-07'
+    goldprice.save(update_fields=['day'])
     goldprice_ver = GoldPrice.objects.create(
-        day='2021-01-08',
         price=1875.00
     )
-    response = client.get('/forecast_verification/', {
-        'lista_prognoz': lista_prognoz
-    })
+    goldprice_ver.day='2021-01-08'
+    goldprice_ver.save(update_fields=['day'])
+    goldprice.refresh_from_db()
+    goldprice_ver.refresh_from_db()
+    response = client.get('/forecast_verification/')
     print(response.context)
-    assert ocena_prognozy['result_of_verification'] == True
+    assert response.context['lista_prognoz'][0]['result_of_verification'] == True
+    assert response.context['lista_prognoz'][0]['accuracy'] == 50
+
+
+@pytest.mark.django_db
+def test_forecast_verification_next(user_data, client, authenticated_user):
+    foracast = Forecast.objects.create(
+        author=authenticated_user,
+        gold_forecast=1900.00,
+        verification_date='2021-01-08'
+    )
+    foracast.created='2021-01-07'
+    foracast.save(update_fields=['created'])
+    foracast.refresh_from_db()
+    goldprice = GoldPrice.objects.create(
+        price=1850.00
+    )
+    goldprice.day='2021-01-07'
+    goldprice.save(update_fields=['day'])
+    goldprice_ver = GoldPrice.objects.create(
+        price=1800.00
+    )
+    goldprice_ver.day='2021-01-08'
+    goldprice_ver.save(update_fields=['day'])
+    goldprice.refresh_from_db()
+    goldprice_ver.refresh_from_db()
+    response = client.get('/forecast_verification/')
+    print(response.context)
+    assert response.context['lista_prognoz'][0]['result_of_verification'] == False
+    assert response.context['lista_prognoz'][0]['accuracy'] == 0
+

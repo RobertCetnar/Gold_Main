@@ -4,7 +4,6 @@ from django.test import Client
 from django.contrib.auth import get_user_model
 
 
-
 @pytest.fixture
 def client():
     client = Client()
@@ -46,13 +45,4 @@ def authenticated_user(client, user_data):
     test_user.save()
     client.force_login(test_user)
     return test_user
-
-
-
-
-
-
-
-
-
 
